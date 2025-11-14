@@ -5,6 +5,7 @@ import Inventory from '../views/Inventory.vue'
 import Issues from '../views/Issues.vue'
 import Payments from '../views/Payments.vue'
 import Deliveries from '../views/Deliveries.vue'
+import Users from '../views/Users.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 
@@ -45,6 +46,12 @@ const routes = [
     path: '/deliveries', 
     name: 'Deliveries', 
     component: Deliveries,
+    meta: { requiresAuth: true }
+  },
+  { 
+    path: '/users', 
+    name: 'Users', 
+    component: Users,
     meta: { requiresAuth: true }
   },
 ]

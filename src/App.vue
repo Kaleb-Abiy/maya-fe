@@ -10,6 +10,7 @@
           <li><router-link to="/issues">Issues</router-link></li>
           <li><router-link to="/payments">Payments</router-link></li>
           <li><router-link to="/deliveries">Deliveries</router-link></li>
+          <li><router-link to="/users">Users</router-link></li>
           <li class="user-menu">
             <span class="username">{{ currentUser?.username || 'Admin' }}</span>
             <button @click="handleLogout" class="btn-logout">Logout</button>
