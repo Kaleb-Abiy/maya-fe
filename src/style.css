@@ -314,3 +314,280 @@ canvas {
   height: 400px !important;
 }
 
+/* ============================================
+   RESPONSIVE STYLES - MOBILE FIRST
+   ============================================ */
+
+/* Mobile devices (up to 768px) */
+@media (max-width: 768px) {
+  /* Navbar - handled in App.vue with hamburger menu */
+  .nav-container {
+    padding: 1rem;
+  }
+
+  .logo {
+    font-size: 1.2rem;
+  }
+
+  /* Main content */
+  .main-content {
+    padding: 1rem;
+    margin: 1rem auto;
+  }
+
+  .page-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .page-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .page-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .page-header .btn {
+    width: 100%;
+  }
+
+  /* Cards */
+  .card {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  /* Stats grid */
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .stat-card {
+    padding: 1rem;
+  }
+
+  .stat-card .value {
+    font-size: 1.5rem;
+  }
+
+  /* Tables - Make scrollable on mobile */
+  .table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+
+  .table thead,
+  .table tbody,
+  .table tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+    min-width: 80px;
+  }
+
+  /* Modal */
+  .modal-content {
+    width: 95%;
+    padding: 1.5rem;
+    max-height: 95vh;
+  }
+
+  .modal-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .modal-header h3 {
+    font-size: 1.2rem;
+  }
+
+  .close-btn {
+    align-self: flex-end;
+    margin-top: -2rem;
+  }
+
+  .modal-footer {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .modal-footer .btn {
+    width: 100%;
+  }
+
+  /* Forms */
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  /* Charts */
+  .card canvas {
+    height: 300px !important;
+    max-height: 300px !important;
+  }
+
+  .card div[style*="height: 400px"] {
+    height: 300px !important;
+  }
+
+  /* Buttons - but not in tables */
+  .page-header .btn,
+  .modal-footer .btn,
+  .form-group .btn {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-header .btn:last-child,
+  .modal-footer .btn:last-child,
+  .form-group .btn:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Action buttons in tables */
+  .table td:last-child {
+    white-space: normal;
+  }
+
+  .table td:last-child .btn {
+    width: auto;
+    margin: 0.25rem 0.25rem 0.25rem 0;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+
+  /* Alert items */
+  .alert-item {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Small mobile devices (up to 480px) */
+@media (max-width: 480px) {
+  .nav-container {
+    padding: 0.75rem;
+  }
+
+  .logo {
+    font-size: 1rem;
+  }
+
+  .main-content {
+    padding: 0.75rem;
+    margin: 0.5rem auto;
+  }
+
+  .page-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .card {
+    padding: 0.75rem;
+  }
+
+  .stat-card {
+    padding: 0.75rem;
+  }
+
+  .stat-card .value {
+    font-size: 1.25rem;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.4rem;
+    font-size: 0.8rem;
+    min-width: 70px;
+  }
+
+  .modal-content {
+    padding: 1rem;
+  }
+
+  .card canvas {
+    height: 250px !important;
+    max-height: 250px !important;
+  }
+
+  .card div[style*="height: 400px"] {
+    height: 250px !important;
+  }
+}
+
+/* Tablet devices (769px to 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .nav-menu {
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.6rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Fix for page-header with button on mobile */
+@media (max-width: 768px) {
+  .page-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .page-header h2,
+  .page-header h1 {
+    margin-bottom: 0;
+  }
+
+  .page-header .btn {
+    width: 100%;
+    margin-top: 0;
+  }
+}
+
+/* Ensure tables are scrollable on mobile */
+@media (max-width: 768px) {
+  .card {
+    overflow-x: auto;
+  }
+
+  .table {
+    min-width: 600px;
+  }
+}
+
+/* Better button spacing in tables on mobile */
+@media (max-width: 768px) {
+  .table td .btn {
+    display: inline-block;
+    width: auto;
+    margin: 0.25rem 0.25rem 0.25rem 0;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+
+  .table td .btn:last-child {
+    margin-right: 0;
+  }
+}
+

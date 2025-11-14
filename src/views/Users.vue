@@ -273,13 +273,59 @@ onMounted(() => {
     padding: 1rem;
   }
 
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .page-header p {
+    font-size: 0.9rem;
+  }
+
+  .users-table-container {
+    overflow-x: auto;
+  }
+
   .data-table {
     font-size: 0.85rem;
+    min-width: 600px;
   }
 
   .data-table th,
   .data-table td {
     padding: 0.5rem;
+    min-width: 80px;
+  }
+
+  .data-table td:last-child {
+    white-space: normal;
+  }
+
+  .data-table .btn {
+    width: auto;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    margin: 0.25rem 0.25rem 0.25rem 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .users-container {
+    padding: 0.75rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .data-table {
+    font-size: 0.8rem;
+    min-width: 500px;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 0.4rem;
+    min-width: 70px;
   }
 }
 </style>

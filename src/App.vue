@@ -2,15 +2,23 @@
   <div id="app">
     <nav v-if="showNavbar" class="navbar">
       <div class="nav-container">
-        <h1 class="logo">Maya Inventory</h1>
-        <ul class="nav-menu">
-          <li><router-link to="/">Dashboard</router-link></li>
-          <li><router-link to="/clients">Clients</router-link></li>
-          <li><router-link to="/inventory">Inventory</router-link></li>
-          <li><router-link to="/issues">Issues</router-link></li>
-          <li><router-link to="/payments">Payments</router-link></li>
-          <li><router-link to="/deliveries">Deliveries</router-link></li>
-          <li><router-link to="/users">Users</router-link></li>
+        <div class="nav-brand">
+          <h1 class="logo">Maya Inventory</h1>
+          <button class="hamburger" @click="toggleMobileMenu" :aria-expanded="mobileMenuOpen" aria-label="Toggle menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+        <div v-if="mobileMenuOpen" class="mobile-menu-backdrop" @click="closeMobileMenu"></div>
+        <ul class="nav-menu" :class="{ 'mobile-open': mobileMenuOpen }">
+          <li><router-link to="/" @click="closeMobileMenu">Dashboard</router-link></li>
+          <li><router-link to="/clients" @click="closeMobileMenu">Clients</router-link></li>
+          <li><router-link to="/inventory" @click="closeMobileMenu">Inventory</router-link></li>
+          <li><router-link to="/issues" @click="closeMobileMenu">Issues</router-link></li>
+          <li><router-link to="/payments" @click="closeMobileMenu">Payments</router-link></li>
+          <li><router-link to="/deliveries" @click="closeMobileMenu">Deliveries</router-link></li>
+          <li><router-link to="/users" @click="closeMobileMenu">Users</router-link></li>
           <li class="user-menu">
             <span class="username">{{ currentUser?.username || 'Admin' }}</span>
             <button @click="handleLogout" class="btn-logout">Logout</button>
@@ -33,6 +41,7 @@ const router = useRouter()
 const route = useRoute()
 const currentUser = ref(null)
 const authToken = ref(localStorage.getItem('token'))
+const mobileMenuOpen = ref(false)
 
 const isAuthenticated = computed(() => {
   return !!authToken.value
@@ -68,11 +77,20 @@ const loadUser = async () => {
   }
 }
 
+const toggleMobileMenu = () => {
+  mobileMenuOpen.value = !mobileMenuOpen.value
+}
+
+const closeMobileMenu = () => {
+  mobileMenuOpen.value = false
+}
+
 const handleLogout = () => {
   localStorage.removeItem('token')
   localStorage.removeItem('user')
   authToken.value = null
   currentUser.value = null
+  mobileMenuOpen.value = false
   router.push('/login')
 }
 
@@ -81,6 +99,9 @@ watch(() => route.path, () => {
   // Update token ref from localStorage
   const token = localStorage.getItem('token')
   authToken.value = token
+  
+  // Close mobile menu on route change
+  closeMobileMenu()
   
   if (token && !currentUser.value) {
     loadUser()
@@ -115,6 +136,45 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.nav-brand {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  gap: 0.25rem;
+  z-index: 1001;
+}
+
+.hamburger span {
+  display: block;
+  width: 25px;
+  height: 3px;
+  background-color: white;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.hamburger[aria-expanded="true"] span:nth-child(1) {
+  transform: rotate(45deg) translate(8px, 8px);
+}
+
+.hamburger[aria-expanded="true"] span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger[aria-expanded="true"] span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -7px);
+}
+
 .user-menu {
   margin-left: auto;
   display: flex;
@@ -144,6 +204,89 @@ onMounted(() => {
 
 .main-content.no-nav {
   margin-top: 0;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+
+  .mobile-menu-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .nav-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    max-width: 85%;
+    height: 100vh;
+    background-color: #2c5f7c;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    padding: 4rem 1rem 1rem;
+    gap: 0;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+    overflow-y: auto;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .nav-menu.mobile-open {
+    transform: translateX(0);
+  }
+
+  .nav-menu li {
+    width: 100%;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .nav-menu a {
+    display: block;
+    padding: 1rem;
+    width: 100%;
+    text-align: left;
+  }
+
+  .user-menu {
+    margin-left: 0;
+    margin-top: auto;
+    padding-top: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+    border-top: 2px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .username {
+    text-align: center;
+    width: 100%;
+    padding: 0.5rem;
+  }
+
+  .btn-logout {
+    width: 100%;
+    padding: 0.75rem;
+  }
 }
 </style>
 
