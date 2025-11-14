@@ -1,7 +1,19 @@
 import axios from 'axios'
 
+// Use environment variable for API URL in production, or proxy path in development
+const getBaseURL = () => {
+  // In production, use the full API URL from environment
+  if (import.meta.env.VITE_API_URL) {
+    // Ensure it ends with /api/v1
+    const apiUrl = import.meta.env.VITE_API_URL.replace(/\/$/, '')
+    return `${apiUrl}/api/v1`
+  }
+  // In development, use proxy path (Vite will proxy to backend)
+  return '/api/v1'
+}
+
 const api = axios.create({
-  baseURL: '/api/v1',
+  baseURL: getBaseURL(),
   headers: {
     'Content-Type': 'application/json'
   }
