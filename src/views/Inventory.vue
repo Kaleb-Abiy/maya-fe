@@ -5,6 +5,27 @@
       <button class="btn btn-primary" @click="showModal = true">Add Daily Entry</button>
     </div>
 
+    <!-- Initial Stock Section -->
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem;">Initial Stock</h3>
+          <p style="margin: 0; color: #666; font-size: 0.9rem;">
+            Set your starting inventory when integrating with existing stock. This value is added to your daily inventory entries.
+          </p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <label style="font-weight: 500;">Current Initial Stock:</label>
+            <span style="font-size: 1.2rem; font-weight: bold; color: #2c5f7c;">{{ initialStock }}</span>
+          </div>
+          <button class="btn btn-secondary" @click="openInitialStockModal">
+            {{ initialStock > 0 ? 'Update' : 'Set' }} Initial Stock
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div class="card">
       <table class="table">
         <thead>
@@ -68,6 +89,35 @@
         </form>
       </div>
     </div>
+
+    <!-- Initial Stock Modal -->
+    <div v-if="showInitialStockModal" class="modal" @click.self="closeInitialStockModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>{{ initialStock > 0 ? 'Update' : 'Set' }} Initial Stock</h3>
+          <button class="close-btn" @click="closeInitialStockModal">&times;</button>
+        </div>
+        <form @submit.prevent="saveInitialStock">
+          <div class="form-group">
+            <label>Initial Stock (Total Eggs) *</label>
+            <input 
+              v-model.number="initialStockForm.initial_stock" 
+              type="number" 
+              min="0" 
+              required 
+              placeholder="Enter total eggs in stock"
+            />
+            <small style="color: #666; display: block; margin-top: 0.5rem;">
+              This represents the total number of eggs you have in stock before adding daily inventory entries.
+            </small>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="closeInitialStockModal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -78,6 +128,11 @@ import api from '../services/api'
 const inventory = ref([])
 const showModal = ref(false)
 const editingEntry = ref(null)
+const initialStock = ref(0)
+const showInitialStockModal = ref(false)
+const initialStockForm = ref({
+  initial_stock: 0
+})
 const form = ref({
   date: new Date().toISOString().split('T')[0],
   normal_eggs: 0,
@@ -96,6 +151,42 @@ const loadInventory = async () => {
   } catch (error) {
     console.error('Error loading inventory:', error)
     inventory.value = []
+  }
+}
+
+const loadInitialStock = async () => {
+  try {
+    const response = await api.get('/settings/initial-stock')
+    initialStock.value = response.data.initial_stock || 0
+  } catch (error) {
+    console.error('Error loading initial stock:', error)
+    initialStock.value = 0
+  }
+}
+
+const saveInitialStock = async () => {
+  try {
+    await api.put('/settings/initial-stock', initialStockForm.value)
+    await loadInitialStock()
+    closeInitialStockModal()
+    alert('Initial stock updated successfully!')
+  } catch (error) {
+    console.error('Error saving initial stock:', error)
+    alert(error.response?.data?.detail || 'Error saving initial stock. Please try again.')
+  }
+}
+
+const openInitialStockModal = () => {
+  initialStockForm.value = {
+    initial_stock: initialStock.value
+  }
+  showInitialStockModal.value = true
+}
+
+const closeInitialStockModal = () => {
+  showInitialStockModal.value = false
+  initialStockForm.value = {
+    initial_stock: initialStock.value
   }
 }
 
@@ -149,6 +240,10 @@ const closeModal = () => {
 
 onMounted(() => {
   loadInventory()
+  loadInitialStock()
+  initialStockForm.value = {
+    initial_stock: initialStock.value
+  }
 })
 </script>
 
