@@ -6,6 +6,8 @@ import Issues from '../views/Issues.vue'
 import Payments from '../views/Payments.vue'
 import Deliveries from '../views/Deliveries.vue'
 import Users from '../views/Users.vue'
+import ChickenDeaths from '../views/ChickenDeaths.vue'
+import ChickensManagement from '../views/ChickensManagement.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 
@@ -52,6 +54,18 @@ const routes = [
     path: '/users', 
     name: 'Users', 
     component: Users,
+    meta: { requiresAuth: true }
+  },
+  { 
+    path: '/chicken-deaths', 
+    name: 'ChickenDeaths', 
+    component: ChickenDeaths,
+    meta: { requiresAuth: true }
+  },
+  { 
+    path: '/chickens-management', 
+    name: 'ChickensManagement', 
+    component: ChickensManagement,
     meta: { requiresAuth: true }
   },
 ]

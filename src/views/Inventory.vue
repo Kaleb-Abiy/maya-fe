@@ -35,6 +35,7 @@
             <th>Polluted Eggs</th>
             <th>Cracked Eggs</th>
             <th>Total Eggs</th>
+            <th>Production %</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -46,12 +47,21 @@
             <td>{{ entry.cracked_eggs }}</td>
             <td><strong>{{ entry.total_eggs }}</strong></td>
             <td>
+              <span :style="{ 
+                color: entry.production_percentage >= 80 ? '#28a745' : 
+                       entry.production_percentage >= 60 ? '#ffc107' : '#dc3545',
+                fontWeight: 'bold'
+              }">
+                {{ entry.production_percentage }}%
+              </span>
+            </td>
+            <td>
               <button class="btn btn-secondary" @click="editEntry(entry)" style="margin-right: 0.5rem;">Edit</button>
               <button class="btn btn-danger" @click="deleteEntry(entry.id)">Delete</button>
             </td>
           </tr>
           <tr v-if="inventory.length === 0">
-            <td colspan="6" style="text-align: center; padding: 2rem; color: #999;">
+            <td colspan="7" style="text-align: center; padding: 2rem; color: #999;">
               No inventory entries found.
             </td>
           </tr>

@@ -33,6 +33,15 @@
         <h3>Sales Today</h3>
         <div class="value">${{ formatCurrency(stats.totalSalesToday || 0) }}</div>
       </div>
+      <div class="stat-card">
+        <h3>Production % Today</h3>
+        <div class="value" :style="{ 
+          color: (stats.productionPercentageToday || 0) >= 80 ? '#28a745' : 
+                 (stats.productionPercentageToday || 0) >= 60 ? '#ffc107' : '#dc3545'
+        }">
+          {{ (stats.productionPercentageToday || 0).toFixed(2) }}%
+        </div>
+      </div>
     </div>
 
     <div class="card">
@@ -46,6 +55,13 @@
       <h3 style="margin-bottom: 1rem;">Eggs Production Trend (Last 30 Days)</h3>
       <div style="position: relative; height: 400px; width: 100%;">
         <canvas ref="productionChartCanvas" id="productionChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom: 1rem;">Production Percentage Trend (Last 30 Days)</h3>
+      <div style="position: relative; height: 400px; width: 100%;">
+        <canvas ref="productionPercentageChartCanvas" id="productionPercentageChart"></canvas>
       </div>
     </div>
 
@@ -97,14 +113,17 @@ const stats = ref({
   stockBalance: 0,
   totalEggsSold: 0,
   totalSales: 0,
-  totalSalesToday: 0
+  totalSalesToday: 0,
+  productionPercentageToday: 0
 })
 
 const overdueAlerts = ref([])
 const chartCanvas = ref(null)
 const productionChartCanvas = ref(null)
+const productionPercentageChartCanvas = ref(null)
 let chartInstance = null
 let productionChartInstance = null
+let productionPercentageChartInstance = null
 
 const formatDate = (date) => {
   return new Date(date).toLocaleDateString()
@@ -387,6 +406,121 @@ const createProductionChart = (chartData) => {
   }
 }
 
+const createProductionPercentageChart = (chartData) => {
+  console.log('createProductionPercentageChart called with data:', chartData)
+  
+  if (!productionPercentageChartCanvas.value) {
+    console.error('Production percentage chart canvas not available, trying to find by ID...')
+    const canvasEl = document.getElementById('productionPercentageChart')
+    if (canvasEl) {
+      console.log('Found canvas by ID')
+      productionPercentageChartCanvas.value = canvasEl
+    } else {
+      console.error('Production percentage chart canvas not available and not found by ID')
+      return
+    }
+  }
+  
+  if (!chartData || chartData.length === 0) {
+    console.warn('No production percentage chart data available')
+    return
+  }
+  
+  // Destroy existing chart if it exists
+  if (productionPercentageChartInstance) {
+    productionPercentageChartInstance.destroy()
+    productionPercentageChartInstance = null
+  }
+  
+  try {
+    const labels = chartData.map(item => {
+      const dateStr = item.date
+      const date = new Date(dateStr)
+      if (isNaN(date.getTime())) {
+        console.error('Invalid date:', dateStr)
+        return dateStr
+      }
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    })
+    
+    const percentageData = chartData.map(item => parseFloat(item.production_percentage || 0))
+    
+    console.log('Creating production percentage chart with data:', { 
+      labelsCount: labels.length, 
+      percentageSample: percentageData.slice(0, 5),
+      canvasElement: productionPercentageChartCanvas.value
+    })
+    
+    productionPercentageChartInstance = new Chart(productionPercentageChartCanvas.value, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Production Percentage',
+            data: percentageData,
+            borderColor: '#667eea',
+            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+            tension: 0.4,
+            fill: true,
+            pointRadius: 4,
+            pointHoverRadius: 6
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+          mode: 'index',
+          intersect: false
+        },
+        plugins: {
+          legend: {
+            position: 'top'
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return `Production: ${context.parsed.y.toFixed(2)}%`
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            display: true,
+            title: {
+              display: true,
+              text: 'Date'
+            }
+          },
+          y: {
+            type: 'linear',
+            display: true,
+            position: 'left',
+            title: {
+              display: true,
+              text: 'Production Percentage (%)'
+            },
+            beginAtZero: true,
+            max: 100,
+            ticks: {
+              callback: function(value) {
+                return value + '%'
+              }
+            }
+          }
+        }
+      }
+    })
+    
+    console.log('Production percentage chart created successfully')
+  } catch (error) {
+    console.error('Error creating production percentage chart:', error)
+  }
+}
+
 const loadStats = async () => {
   try {
     const response = await api.get('/dashboard/stats')
@@ -399,7 +533,8 @@ const loadStats = async () => {
       stockBalance: response.data.stock_balance,
       totalEggsSold: response.data.total_eggs_sold,
       totalSales: response.data.total_sales,
-      totalSalesToday: response.data.total_sales_today
+      totalSalesToday: response.data.total_sales_today,
+      productionPercentageToday: response.data.production_percentage_today || 0
     }
     overdueAlerts.value = response.data.overdue_alerts || []
     
@@ -448,6 +583,28 @@ const loadStats = async () => {
       }, 300)
     } else {
       console.warn('No production chart data available')
+    }
+    
+    // Create production percentage chart
+    if (response.data.production_percentage_chart_data && response.data.production_percentage_chart_data.length > 0) {
+      console.log('Production percentage chart data received:', response.data.production_percentage_chart_data.length, 'data points')
+      setTimeout(() => {
+        console.log('Attempting to create production percentage chart, canvas ref:', productionPercentageChartCanvas.value)
+        if (productionPercentageChartCanvas.value) {
+          createProductionPercentageChart(response.data.production_percentage_chart_data)
+        } else {
+          console.error('Production percentage canvas element not found!')
+          setTimeout(() => {
+            if (productionPercentageChartCanvas.value) {
+              createProductionPercentageChart(response.data.production_percentage_chart_data)
+            } else {
+              console.error('Production percentage canvas still not found after retry')
+            }
+          }, 200)
+        }
+      }, 400)
+    } else {
+      console.warn('No production percentage chart data available')
     }
   } catch (error) {
     console.error('Error fetching dashboard stats:', error)
