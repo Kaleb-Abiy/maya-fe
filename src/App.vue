@@ -19,6 +19,8 @@
           <li><router-link to="/payments" @click="closeMobileMenu">Payments</router-link></li>
           <li><router-link to="/deliveries" @click="closeMobileMenu">Deliveries</router-link></li>
           <li><router-link to="/chickens-management" @click="closeMobileMenu">Chickens Management</router-link></li>
+          <li><router-link to="/medications" @click="closeMobileMenu">Medications & Vitamins</router-link></li>
+          <li><router-link to="/vaccines" @click="closeMobileMenu">Vaccines</router-link></li>
           <li><router-link to="/users" @click="closeMobileMenu">Users</router-link></li>
           <li class="user-menu">
             <span class="username">{{ currentUser?.username || 'Admin' }}</span>

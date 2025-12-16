@@ -8,6 +8,8 @@ import Deliveries from '../views/Deliveries.vue'
 import Users from '../views/Users.vue'
 import ChickenDeaths from '../views/ChickenDeaths.vue'
 import ChickensManagement from '../views/ChickensManagement.vue'
+import Medications from '../views/Medications.vue'
+import Vaccines from '../views/Vaccines.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 
@@ -66,6 +68,18 @@ const routes = [
     path: '/chickens-management', 
     name: 'ChickensManagement', 
     component: ChickensManagement,
+    meta: { requiresAuth: true }
+  },
+  { 
+    path: '/medications', 
+    name: 'Medications', 
+    component: Medications,
+    meta: { requiresAuth: true }
+  },
+  { 
+    path: '/vaccines', 
+    name: 'Vaccines', 
+    component: Vaccines,
     meta: { requiresAuth: true }
   },
 ]
